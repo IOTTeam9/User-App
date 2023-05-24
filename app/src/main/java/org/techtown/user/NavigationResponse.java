@@ -4,31 +4,28 @@ import com.google.gson.annotations.SerializedName;
 
 public class NavigationResponse {
 
-    @SerializedName("code")
-    private int code;
-
-    @SerializedName("data")
-    private Navigation data;
-
     @SerializedName("isSuccess")
     private boolean isSuccess;
-
+    @SerializedName("code")
+    private int code;
     @SerializedName("message")
     private String message;
-
-    public int getCode() {
-        return code;
-    }
-
-    public Navigation getData() {
-        return data;
-    }
+    @SerializedName("result")
+    private String result;
 
     public boolean isSuccess() {
         return isSuccess;
     }
 
+    public int getCode() {
+        return code;
+    }
+
     public String getMessage() {
         return message;
+    }
+
+    public String getResult() {
+        return result;
     }
 }
