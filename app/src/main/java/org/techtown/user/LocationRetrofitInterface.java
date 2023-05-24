@@ -6,7 +6,7 @@ import retrofit2.http.POST;
 
 public interface LocationRetrofitInterface {
 
-    @POST("/post/myLocation")
+    @POST("/wifis/create")
     Call<NavigationResponse> sendLocation(@Body Location myLocation);
 
 }

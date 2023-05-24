@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
         // retrofit 설정
-        String BASE_URL = "";
+        String BASE_URL = "https://cha-conne.kro.kr";
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity  {
 
         // WiFi manager를 통해 현재 위치의 fingerprint 값을 보내는 코드 (지금은 임시로 더미 데이터를 사용합니다.)
         // 이 부분에 WiFi manager를 통해 현재 위치의 fingerprint 값을 구하여 Location 타입 변수에 저장하는 코드가 필요합니다.
-        Location myLocation = new Location("mac_address", -60);
+        Location myLocation = new Location("414호", "SSID","mac_address", -60);
 
         // sendLocation API 호출
         retrofitAPI.sendLocation(myLocation).enqueue(new Callback<NavigationResponse>() {
@@ -69,9 +69,12 @@ public class MainActivity extends AppCompatActivity  {
                     // resp의 data 변수에는 Navigation 타입의 변수인 direction과 distance가 존재합니다.
 
                     // 밑에 있는 direction과 distance를 네비게이션 기능에 이용하면 됩니다.
-                    Navigation respData = resp.getData();
-                    String direction = respData.getDirection();
-                    int distance = respData.getDistance();
+//                    Navigation respData = resp.getData();
+//                    String direction = respData.getDirection();
+//                    int distance = respData.getDistance();
+//                    Log.d("SUCCESS", "direction : " + direction + " distance : " + distance);
+
+                    Log.d("SUCCESS", resp.getMessage());
                 }
             }
 
