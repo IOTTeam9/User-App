@@ -5,28 +5,26 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical">
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="250dp"
+        android:layout_margin="10dp"
+        android:src="@drawable/logo"
+        android:layout_gravity="center_horizontal"/>
 
-    <androidx.appcompat.widget.Toolbar
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/toolbar"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#99ccff">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="20dp"
-            android:text="Set Destination">
-
-        </TextView>
-    </androidx.appcompat.widget.Toolbar>
+        android:textSize="25dp"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:text="Select Destination"
+        android:background="#99ccff"
+        android:layout_gravity="center"/>
 
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    </ListView>
+        android:layout_height="wrap_content"></ListView>
 
 </LinearLayout>
