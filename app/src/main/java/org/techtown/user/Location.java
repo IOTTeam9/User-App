@@ -3,9 +3,6 @@ package org.techtown.user;
 import com.google.gson.annotations.SerializedName;
 
 public class Location {
-
-    @SerializedName("place")
-    private String place;
     @SerializedName("ssid")
     private String ssid;
     @SerializedName("bssid")
@@ -13,16 +10,12 @@ public class Location {
     @SerializedName("rssi")
     private int rssi;
 
-    public Location(String place, String ssid, String bssid, int rssi) {
-        this.place = place;
+    public Location(String ssid, String bssid, int rssi) {
         this.ssid = ssid;
         this.bssid = bssid;
         this.rssi = rssi;
     }
 
-    public String getPlace() {
-        return place;
-    }
 
     public String getSsid() {
         return ssid;
