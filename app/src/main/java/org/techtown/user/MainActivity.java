@@ -32,7 +32,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
-
+    private String selectedDest;
     ArrayList<String[]> arrayList = new ArrayList<>();
     ;
     List<Location> locationList = new ArrayList<>();
@@ -119,9 +119,13 @@ public class MainActivity extends AppCompatActivity {
 
         // List 클릭 시
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-                                    long arg3) {
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                // 선택된 아이템의 값을 가져옴
+                selectedDest = mid[arg2];
+
+                // NavigationActivity로 이동하는 코드
                 Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
+                intent.putExtra("selectedDest", selectedDest); // 목적지 보내기
                 startActivity(intent);
             }
         });

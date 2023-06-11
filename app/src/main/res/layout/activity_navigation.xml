@@ -48,22 +48,37 @@
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="490dp"
-            android:layout_weight="1" />
-        <TextView
+            android:layout_height="400dp" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Destination : AI관-401"
-            android:textSize="20dp"
-            android:textStyle="bold"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Current Location : AI관-528"
-            android:textSize="20dp"
-            android:textStyle="bold"/>
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+            <TextView
+                android:id="@+id/main_currentPosition_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="AI관-401"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/arrow"
+                android:layout_gravity="center"/>
+            <TextView
+                android:id="@+id/destination"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="AI관-528"
+                android:textSize="20dp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
         <Button
             android:id="@+id/resetbtn"
             android:layout_width="wrap_content"

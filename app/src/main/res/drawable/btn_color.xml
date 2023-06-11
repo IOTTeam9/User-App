@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle" android:padding = "10dp">
+    android:shape="rectangle" android:padding="10dp">
     <!-- 버튼 색깔 -->
     <solid android:color="#99ccff"/>
+    <!-- 가장자리 둥글게 -->
+    <corners android:radius="10dp" />
 </shape>
+
