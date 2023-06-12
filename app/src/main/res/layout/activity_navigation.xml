@@ -28,28 +28,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="20dp"
-            android:text="Remaining distance : ">
-        </TextView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/distance"
-            android:textSize="30dp"
-            android:background="#99ccff"
-            android:textStyle="bold"/>
-        <FrameLayout
-            android:id="@+id/fragment_container"
-            android:layout_width="match_parent"
-            android:layout_height="400dp" />
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,7 +44,7 @@
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="30dp"
-                android:layout_margin="10dp"
+                android:layout_margin="5dp"
                 android:src="@drawable/arrow"
                 android:layout_gravity="center"/>
             <TextView
@@ -77,16 +55,23 @@
                 android:text="AI관-528"
                 android:textSize="20dp"
                 android:textStyle="bold"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:text="@string/distance"
+                android:textSize="25dp"
+                android:background="#99ccff"
+                android:textStyle="bold"/>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/resetbtn"
+        <ImageView
+            android:id="@+id/mapView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/btn_color"
-            android:padding="10dp"
-            android:text="Reset Destination" />
+            android:layout_gravity="center"
+            android:scaleType="fitXY" />
 
     </LinearLayout>
 
