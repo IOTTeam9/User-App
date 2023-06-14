@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -35,7 +36,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
     private String selectedDest;
     ArrayList<String[]> arrayList = new ArrayList<>();
-    ;
     List<Location> locationList = new ArrayList<>();
 
     WifiManager wifiManager;
@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     boolean isWifiScan = false;
     boolean doneWifiScan = true;
     final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+
+    TextView currentPosition;
 
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -76,16 +78,14 @@ public class MainActivity extends AppCompatActivity {
 
             for(int i = 0; i < scanResultList.size(); i++){
                 ScanResult result = scanResultList.get(i);
-                String[] dataset = new String[3];
+                String[] dataset = new String[2];
 
-                // dataset에 SSID, BSSID, RSSI, Place를 순서대로 저장
-                dataset[0] = String.valueOf(result.SSID);
-                dataset[1] = String.valueOf(result.BSSID);
-                dataset[2] = String.valueOf(result.level);
+                // dataset에 BSSID, RSSI, Place를 순서대로 저장
+                dataset[0] = String.valueOf(result.BSSID);
+                dataset[1] = String.valueOf(result.level);
 
-                Log.d("WIFI NAME !! : ", dataset[0]);
-                Log.d("WIFI MAC!! : ", dataset[1]);
-                Log.d("RSSI LEVEL!! : ", dataset[2]);
+                Log.d("WIFI MAC!! : ", dataset[0]);
+                Log.d("RSSI LEVEL!! : ", dataset[1]);
 
                 arrayList.add(i, dataset);
             }
@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button findBtn = (Button) findViewById(R.id.main_findBtn_btn);
         ListView list = (ListView) findViewById(R.id.listView1);
+        currentPosition = (TextView) findViewById(R.id.main_currentPosition_tv);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, mid);
@@ -146,10 +147,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isPermitted) {
                     wifiManager.startScan();
                     isWifiScan = true;
-
                 }
-
-
             }
         });
 
@@ -160,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
     public List<Location> transformDataList(ArrayList<String[]> arrayList) {
 
         for(int i = 0; i < arrayList.size(); i++) {
-            locationList.add(new Location(arrayList.get(i)[0], arrayList.get(i)[1], Integer.parseInt(arrayList.get(i)[2])));
+            locationList.add(new Location(arrayList.get(i)[0], Integer.parseInt(arrayList.get(i)[1])));
             Log.d("LOCATION", locationList.get(i).getBssid());
         }
 
@@ -243,28 +241,23 @@ public class MainActivity extends AppCompatActivity {
 
         LocationRetrofitInterface retrofitAPI = retrofit.create(LocationRetrofitInterface.class);
         Log.d("API_CALL", "API INSIDE");
+
         // sendLocation API 호출
-        retrofitAPI.sendLocation(locationList).enqueue(new Callback<NavigationResponse>() {
+        retrofitAPI.sendLocation(locationList).enqueue(new Callback<ReceiveResponse>() {
             @Override
-            public void onResponse(Call<NavigationResponse> call, Response<NavigationResponse> response) {
+            public void onResponse(Call<ReceiveResponse> call, Response<ReceiveResponse> response) {
                 if(response.isSuccessful()) {
                     Log.d("API_CALL", "API INSIDE2");
-                    NavigationResponse resp = response.body();
-                    // resp에서 data 변수를 추출하여 네비게이션 기능에 사용하면 됩니다.
-                    // resp의 data 변수에는 Navigation 타입의 변수인 direction과 distance가 존재합니다.
 
-                    // 밑에 있는 direction과 distance를 네비게이션 기능에 이용하면 됩니다.
-//                    Navigation respData = resp.getData();
-//                    String direction = respData.getDirection();
-//                    int distance = respData.getDistance();
-//                    Log.d("SUCCESS", "direction : " + direction + " distance : " + distance);
+                    ReceiveResponse resp = response.body();
+                    currentPosition.setText(resp.getMessage());
 
-                    Log.d("SUCCESS", resp.getMessage());
+                    Log.d("CURRENT_POSITION", resp.getMessage());
                 }
             }
 
             @Override
-            public void onFailure(Call<NavigationResponse> call, Throwable t) {
+            public void onFailure(Call<ReceiveResponse> call, Throwable t) {
                 Log.d("FAILURE", t.getMessage());
             }
         });
