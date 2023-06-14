@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -65,7 +66,7 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
     boolean doneWifiScan = true;
     final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
-    String currentPosition;
+    String currentPosition = "414호";
     String currentDestination;
     Timer timer;
 
@@ -426,12 +427,33 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
         return maze;
     }
 
-    
+    ItemCoordinates itemCoordinates = new ItemCoordinates();
+
     //센서값 표출 및 빙글빙글
     @Override
     public void onSensorChanged(SensorEvent event) {
         float degree = Math.round(event.values[0]);
-        //TODO: degree 이리저리 해서 원하는 방향 고정
+
+        Point endPoint = itemCoordinates.getEndCoordinate(currentDestination);
+        Point startPoint = itemCoordinates.getStartCoordinate(currentPosition);
+
+        double weight;
+
+        if (endPoint.y == startPoint.y) {
+            if (endPoint.x > startPoint.x) {
+                weight = Math.PI / 2.0;  // 90도
+            } else {
+                weight = -Math.PI / 2.0;  // -90도
+            }
+        } else {
+            weight = Math.atan((double) (endPoint.x - startPoint.x) / (double) (endPoint.y - startPoint.y));
+        }
+
+        weight = Math.toDegrees(weight) + 32;  // 라디안 단위를 각도로 변환, 위쪽을 북쪽으로 맞춰주는 32º 추가
+
+        Log.i("weight", String.valueOf(weight));
+        degree -= weight;
+
         RotateAnimation rotateAnimation = new RotateAnimation(
                 currentDegree,
                 -degree,

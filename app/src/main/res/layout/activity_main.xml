@@ -17,7 +17,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp">
+        android:layout_margin="5dp">
 
         <TextView
             android:id="@+id/main_txt_tv"
@@ -35,7 +35,7 @@
             android:id="@+id/main_currentPosition_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="000호"
+            android:text="@string/DemoPosition"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@id/main_txt_tv"
