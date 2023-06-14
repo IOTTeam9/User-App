@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -98,8 +99,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final String[] mid = {"AI관-407", "AI관-410", "AI관-414", "AI관-416", "AI관-428",
-                "AI관-507", "AI관-510", "AI관-514", "AI관-516", "AI관-517", "AI관-518", "AI관-519", "AI관-528"};
+        final String[] mid = {"414호", "4층 엘레베이터1", "4층 중앙", "4층 아르테크네", "406호",
+                "407호", "4층 엘레베이터2", "413호", "4층 계단", "5층 엘레베이터1", "5층 중앙1", "5층 중앙2", "506호"
+                , "508호", "510호", "5층 엘레베이터2", "513호", "5층 엘레베이터3"};
 
         Button findBtn = (Button) findViewById(R.id.main_findBtn_btn);
         ListView list = (ListView) findViewById(R.id.listView1);
@@ -121,12 +123,17 @@ public class MainActivity extends AppCompatActivity {
         // List 클릭 시
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                ItemCoordinates itemCoordinates = new ItemCoordinates();
                 // 선택된 아이템의 값을 가져옴
                 selectedDest = mid[arg2];
+                //Point startPoint = itemCoordinates.getStartCoordinate(selectedItem);
+                Point endPoint = itemCoordinates.getEndCoordinate(selectedDest); // 목적지 좌표 찾아오기
 
                 // NavigationActivity로 이동하는 코드
                 Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
-                intent.putExtra("selectedDest", selectedDest); // 목적지 보내기
+                intent.putExtra("selectedDest", selectedDest);
+                intent.putExtra("endX", endPoint.x);
+                intent.putExtra("endY", endPoint.y); // 목적지 이름 및 좌표 전송
                 startActivity(intent);
             }
         });
