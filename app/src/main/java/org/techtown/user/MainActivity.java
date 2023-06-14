@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final String[] mid = {"414호", "4층 엘레베이터1", "4층 중앙", "4층 아르테크네", "406호",
-                "407호", "4층 엘레베이터2", "413호", "4층 계단", "5층 엘레베이터1", "5층 중앙1", "5층 중앙2", "506호"
+                "407호", "4층 엘레베이터2", "413호", "411호", "5층 엘레베이터1", "5층 중앙1", "5층 중앙2", "506호"
                 , "508호", "510호", "5층 엘레베이터2", "513호", "5층 엘레베이터3"};
 
         Button findBtn = (Button) findViewById(R.id.main_findBtn_btn);

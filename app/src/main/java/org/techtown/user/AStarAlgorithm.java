@@ -74,7 +74,8 @@ public class AStarAlgorithm {
             Node current = openSet.poll();
 
             if (current == endNode) {
-                return reconstructPath(current);
+                List<Node> path = reconstructPath(current);
+                return path;
             }
 
             closedSet.add(current);
@@ -105,7 +106,6 @@ public class AStarAlgorithm {
 
         return null; // 도착 노드에 도달할 수 없는 경우 빈 리스트 반환
     }
-
 
     private List<Node> reconstructPath(Node endNode) {
         List<Node> path = new ArrayList<>();
@@ -159,7 +159,6 @@ public class AStarAlgorithm {
 
         return neighbors;
     }
-
 
 
     private int calculateFScore(Node node, Node endNode) {
