@@ -132,7 +132,6 @@ public class NavigationActivity extends AppCompatActivity {
         maze = readMazeFromFile();
         AStarAlgorithm algorithm = new AStarAlgorithm(maze);
         path = algorithm.findShortestPath(106, 12, endY, endX); //임의로 지정
-
         if (path != null && !path.isEmpty()) {
             algorithm.showPath(this, path); // path toast로 미리 출력
             drawPathOnCanvas(path, numRows, numCols);
@@ -313,7 +312,7 @@ public class NavigationActivity extends AppCompatActivity {
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.RED);
-        paint.setStrokeWidth(20);
+        paint.setStrokeWidth(50);
         // 배경 이미지 로드
         Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.map);
 

@@ -125,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
                 ItemCoordinates itemCoordinates = new ItemCoordinates();
                 // 선택된 아이템의 값을 가져옴
                 selectedDest = mid[arg2];
-                //Point startPoint = itemCoordinates.getStartCoordinate(selectedItem);
                 Point endPoint = itemCoordinates.getEndCoordinate(selectedDest); // 목적지 좌표 찾아오기
 
                 // NavigationActivity로 이동하는 코드
