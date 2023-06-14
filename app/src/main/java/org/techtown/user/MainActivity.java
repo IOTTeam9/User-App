@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView currentPosition;
 
+
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
         // wifiManger 설정
         wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-        if (wifiManager.isWifiEnabled() == false) {
+        if (!wifiManager.isWifiEnabled()) {
             wifiManager.setWifiEnabled(true);
         }
 
@@ -138,15 +139,19 @@ public class MainActivity extends AppCompatActivity {
                 Point endPoint = itemCoordinates.getEndCoordinate(selectedDest); // 목적지 좌표 찾아오기
                 //Point startPoint = itemCoordinates.getStartCoordinate(selectedDest); 출발지 좌표 찾아오기
 
-                // NavigationActivity로 이동하는 코드
-                Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
-                intent.putExtra("selectedDest", selectedDest);
-                intent.putExtra("endX", endPoint.x);
-                intent.putExtra("endY", endPoint.y); // 목적지 이름 및 좌표 전송
-                intent.putExtra("destination", arg0.getAdapter().getItem(arg2).toString());  // 선택된 목적지 전송
-                intent.putExtra("currentPosition", currentPosition.getText());
-                Log.d("DEST", arg0.getAdapter().getItem(arg2).toString());
-                startActivity(intent);
+                if (!currentPosition.getText().equals("Need to Find")) {
+                    // NavigationActivity로 이동하는 코드
+                    Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
+                    intent.putExtra("selectedDest", selectedDest);
+                    intent.putExtra("endX", endPoint.x);
+                    intent.putExtra("endY", endPoint.y); // 목적지 이름 및 좌표 전송
+                    intent.putExtra("destination", arg0.getAdapter().getItem(arg2).toString());  // 선택된 목적지 전송
+                    intent.putExtra("currentPosition", currentPosition.getText());
+                    Log.d("DEST", arg0.getAdapter().getItem(arg2).toString());
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please Choice After Scan", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
