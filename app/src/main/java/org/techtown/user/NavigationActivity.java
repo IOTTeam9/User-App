@@ -1,42 +1,112 @@
 package org.techtown.user;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Point;
-import android.graphics.Rect;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
-import org.w3c.dom.Node;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NavigationActivity extends AppCompatActivity {
     private List<AStarAlgorithm.Node> path = new ArrayList<>(); // 경로 정보
     private int numRows; // 미로 행 개수
     private int numCols; // 미로 열 개수
     private int[][] maze; // 미로 정보를 저장하는 2차원 배열
+
+    // -----------------------------------------------------------------------
+
+    ArrayList<String[]> arrayList = new ArrayList<>();
+    List<Location> locationList = new ArrayList<>();
+
+    WifiManager wifiManager;
+    List<ScanResult> scanResultList;
+
+    boolean isPermitted = false;
+    boolean isWifiScan = false;
+    boolean doneWifiScan = true;
+    final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+
+    String currentPosition;
+
+    BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
+                getWifiInfo();
+                transformDataList(arrayList);
+                sendLocation(locationList);
+            }
+        }
+    };
+
+
+    private void getWifiInfo() {
+
+        arrayList.clear();
+
+        if(!doneWifiScan) {
+
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            scanResultList = wifiManager.getScanResults();
+
+            for(int i = 0; i < scanResultList.size(); i++){
+                ScanResult result = scanResultList.get(i);
+                String[] dataset = new String[2];
+
+                // dataset에 BSSID, RSSI, Place를 순서대로 저장
+                dataset[0] = String.valueOf(result.BSSID);
+                dataset[1] = String.valueOf(result.level);
+
+                Log.d("WIFI_NAVI MAC!! : ", dataset[0]);
+                Log.d("WIFI_NAVI LEVEL!! : ", dataset[1]);
+
+                arrayList.add(i, dataset);
+            }
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +136,163 @@ public class NavigationActivity extends AppCompatActivity {
             //algorithm.showPath(this, path); // path toast로 미리 출력
             drawPathOnCanvas(path, numRows, numCols);
         }
+
+        // -----------------------------------------------------------------------
+
+
+        // 세팅 검사
+        requestRuntimePermission();
+
+        // wifiManger 설정
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        if (wifiManager.isWifiEnabled() == false) {
+            wifiManager.setWifiEnabled(true);
+        }
+
+        // 정해진 시간마다 실행
+        Timer timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                doneWifiScan = false;
+
+                if (isPermitted) {
+                    Log.d("LISTSIZE", String.valueOf(arrayList.size()));
+                    wifiManager.startScan();
+                    isWifiScan = true;
+                }
+            }
+        };
+        timer.schedule(timerTask, 0, 3000);
+
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // wifi scan 결과 수신을 위한 BroadcastReceiver 등록
+        IntentFilter filter = new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        registerReceiver(mReceiver, filter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // wifi scan 결과 수신용 BroadcastReceiver 등록 해제
+        unregisterReceiver(mReceiver);
+    }
+
+    // user가 현재 위치에서 WIFI 정보를 보내는 함수 (place, ssid, bssid, rssi)
+    private void sendLocation(List<Location> locationList) {
+
+        // retrofit 설정
+        String BASE_URL = "https://cha-conne.kro.kr";
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        LocationRetrofitInterface retrofitAPI = retrofit.create(LocationRetrofitInterface.class);
+        Log.d("API_CALL", "API INSIDE");
+
+        // sendLocation API 호출
+        retrofitAPI.sendLocation(locationList).enqueue(new Callback<ReceiveResponse>() {
+            @Override
+            public void onResponse(Call<ReceiveResponse> call, Response<ReceiveResponse> response) {
+                if(response.isSuccessful()) {
+                    Log.d("API_CALL", "API INSIDE2");
+
+                    ReceiveResponse resp = response.body();
+                    currentPosition = resp.getLocation();
+
+                    Log.d("CURRENT_POSITION", resp.getLocation());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ReceiveResponse> call, Throwable t) {
+                Log.d("FAILURE", t.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // read_external_storage-related task you need to do.
+
+                    // ACCESS_FINE_LOCATION 권한을 얻음
+                    isPermitted = true;
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+
+                    // 권한을 얻지 못 하였으므로 location 요청 작업을 수행할 수 없다
+                    // 적절히 대처한다
+                    isPermitted = false;
+
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    private void requestRuntimePermission() {
+        //*******************************************************************
+        // Runtime permission check
+        //*******************************************************************
+        if (ContextCompat.checkSelfPermission(NavigationActivity.this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(NavigationActivity.this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(NavigationActivity.this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            }
+        } else {
+            // ACCESS_FINE_LOCATION 권한이 있는 것
+            isPermitted = true;
+        }
+        //*********************************************************************
+    }
+
+    public List<Location> transformDataList(ArrayList<String[]> arrayList) {
+
+        locationList.clear();
+
+        for(int i = 0; i < arrayList.size(); i++) {
+            locationList.add(new Location(arrayList.get(i)[0], Integer.parseInt(arrayList.get(i)[1])));
+            Log.d("LOCATION_NAVI", locationList.get(i).getBssid());
+            Log.d("LOCATION_NAVI", String.valueOf(locationList.get(i).getRssi()));
+        }
+
+        return locationList;
+    }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

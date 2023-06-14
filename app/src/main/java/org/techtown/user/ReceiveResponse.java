@@ -2,9 +2,9 @@ package org.techtown.user;
 
 public class ReceiveResponse {
 
-    private String message;
+    private String location;
 
-    public String getMessage() {
-        return message;
+    public String getLocation() {
+        return location;
     }
 }
