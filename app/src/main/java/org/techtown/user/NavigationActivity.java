@@ -63,7 +63,7 @@ public class NavigationActivity extends AppCompatActivity {
         AStarAlgorithm algorithm = new AStarAlgorithm(maze);
         path = algorithm.findShortestPath(106, 12, endY, endX); //임의로 지정
         if (path != null && !path.isEmpty()) {
-            algorithm.showPath(this, path); // path toast로 미리 출력
+            //algorithm.showPath(this, path); // path toast로 미리 출력
             drawPathOnCanvas(path, numRows, numCols);
         }
     }
