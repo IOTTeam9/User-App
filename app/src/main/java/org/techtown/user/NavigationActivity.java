@@ -439,14 +439,14 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
 
         double weight;
 
-        if (endPoint.y == startPoint.y) {
-            if (endPoint.x > startPoint.x) {
+        if (endPoint.x == startPoint.x) {
+            if (endPoint.y > startPoint.y) {
                 weight = Math.PI / 2.0;  // 90도
             } else {
                 weight = -Math.PI / 2.0;  // -90도
             }
         } else {
-            weight = Math.atan((double) (endPoint.x - startPoint.x) / (double) (endPoint.y - startPoint.y));
+            weight = Math.atan((double) (endPoint.y - startPoint.y) / (double) (endPoint.x - startPoint.x));
         }
 
         weight = Math.toDegrees(weight) + 32;  // 라디안 단위를 각도로 변환, 위쪽을 북쪽으로 맞춰주는 32º 추가
