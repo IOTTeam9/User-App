@@ -444,7 +444,7 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
 
 
         Point endPoint = itemCoordinates.getEndCoordinate(currentDestination);
-        Point startPoint = itemCoordinates.getStartCoordinate("414호");//TODO: currentPosition 정상적으로 받아와지면 (currentPosition);
+        Point startPoint = itemCoordinates.getStartCoordinate(currentPosition);//("414호");//TODO: currentPosition 정상적으로 받아와지면 (currentPosition);
 
         double weight;
 

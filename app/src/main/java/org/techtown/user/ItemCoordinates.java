@@ -109,7 +109,7 @@ public class ItemCoordinates {
 
     public Point getStartCoordinate(String item) {
         Point startCoordinate = itemCoordinates.get(item);
-        assert startCoordinate != null;
+        if (startCoordinate == null) return new Point(12, 90);
         return new Point(startCoordinate.x, startCoordinate.y);
     }
 
