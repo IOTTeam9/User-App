@@ -103,11 +103,20 @@ public class ItemCoordinates {
 
     public Point getEndCoordinate(String item) {
         Point endCoordinate = itemCoordinates.get(item);
+        assert endCoordinate != null;
         return new Point(endCoordinate.x, endCoordinate.y);
     }
+
     public Point getStartCoordinate(String item) {
         Point startCoordinate = itemCoordinates.get(item);
+        assert startCoordinate != null;
         return new Point(startCoordinate.x, startCoordinate.y);
+    }
+
+    public Point getNowCoordinate(String item) {
+        Point nowCoordinate = itemCoordinates.get(item);
+        assert nowCoordinate != null;
+        return new Point(nowCoordinate.x, nowCoordinate.y);
     }
 }
 
