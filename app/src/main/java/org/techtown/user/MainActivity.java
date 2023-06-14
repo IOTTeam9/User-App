@@ -98,9 +98,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final String[] mid = {"414호", "4층 엘레베이터1", "4층 중앙", "4층 아르테크네", "406호",
-                "407호", "4층 엘레베이터2", "413호", "411호", "5층 엘레베이터1", "5층 중앙1", "5층 중앙2", "506호"
-                , "508호", "510호", "5층 엘레베이터2", "513호", "5층 엘레베이터3"};
+        final String[] mid = {"414", "400_eli1", "400_terrace", "400_art", "406",
+                "407", "400_eli3", "413", "411", "500_eli2", "cube_n", "cube_s", "506"
+                , "508", "510", "500_eli3", "513", "500_eli1"};
 
         Button findBtn = (Button) findViewById(R.id.main_findBtn_btn);
         ListView list = (ListView) findViewById(R.id.listView1);
