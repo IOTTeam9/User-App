@@ -10,11 +10,18 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,7 +47,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class NavigationActivity extends AppCompatActivity {
+public class NavigationActivity extends AppCompatActivity implements SensorEventListener {
     private List<AStarAlgorithm.Node> path = new ArrayList<>(); // 경로 정보
     private int numRows; // 미로 행 개수
     private int numCols; // 미로 열 개수
@@ -63,6 +70,13 @@ public class NavigationActivity extends AppCompatActivity {
     String currentDestination;
     Timer timer;
 
+
+    //화살표 빙글빙글용
+    private ImageView compassImage;
+    private float currentDegree = 0f;
+    private SensorManager sensorManager;
+
+
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -80,7 +94,7 @@ public class NavigationActivity extends AppCompatActivity {
 
         arrayList.clear();
 
-        if(!doneWifiScan) {
+        if (!doneWifiScan) {
 
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -94,7 +108,7 @@ public class NavigationActivity extends AppCompatActivity {
             }
             scanResultList = wifiManager.getScanResults();
 
-            for(int i = 0; i < scanResultList.size(); i++){
+            for (int i = 0; i < scanResultList.size(); i++) {
                 ScanResult result = scanResultList.get(i);
                 String[] dataset = new String[2];
 
@@ -115,6 +129,10 @@ public class NavigationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
+
+        //화살표 이미지, 센서
+        compassImage = findViewById(R.id.compass_image);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         // 툴바 생성
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -147,7 +165,7 @@ public class NavigationActivity extends AppCompatActivity {
             drawPathOnCanvas(path, numRows, numCols);
             double pathLength = path.size() * 1.32; // 출발지-도착지 거리 구하기
             String formattedLength = String.format("%.2f", pathLength);  // 소수점 둘째 자리까지 표시
-            pathLengthTextView.setText(formattedLength+"m");
+            pathLengthTextView.setText(formattedLength + "m");
         }
 
         // -----------------------------------------------------------------------
@@ -185,6 +203,15 @@ public class NavigationActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        //센서
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION) == null) {
+            // 기기가 방향 센서를 지원하지 않는 경우 처리할 로직 추가
+        } else {
+            sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
+                    SensorManager.SENSOR_DELAY_GAME);
+        }
+
+
         // wifi scan 결과 수신을 위한 BroadcastReceiver 등록
         IntentFilter filter = new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         registerReceiver(mReceiver, filter);
@@ -193,7 +220,8 @@ public class NavigationActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
+        //센서
+        sensorManager.unregisterListener(this);
         // wifi scan 결과 수신용 BroadcastReceiver 등록 해제
         unregisterReceiver(mReceiver);
     }
@@ -216,14 +244,14 @@ public class NavigationActivity extends AppCompatActivity {
         retrofitAPI.sendLocation(locationList).enqueue(new Callback<ReceiveResponse>() {
             @Override
             public void onResponse(Call<ReceiveResponse> call, Response<ReceiveResponse> response) {
-                if(response.isSuccessful()) {
+                if (response.isSuccessful()) {
                     Log.d("API_CALL", "API INSIDE2");
 
                     ReceiveResponse resp = response.body();
                     currentPosition = resp.getLocation();
 
                     // 도착했을 경우 도착 토스트 띄우고 MainActivity 화면으로 나가기.
-                    if(currentPosition == currentDestination) {
+                    if (currentPosition == currentDestination) {
                         Toast.makeText(getApplicationContext(), "Arrived at " + currentDestination, Toast.LENGTH_LONG).show();
                         timer.cancel();
                         finish();
@@ -304,7 +332,7 @@ public class NavigationActivity extends AppCompatActivity {
 
         locationList.clear();
 
-        for(int i = 0; i < arrayList.size(); i++) {
+        for (int i = 0; i < arrayList.size(); i++) {
             locationList.add(new Location(arrayList.get(i)[0], Integer.parseInt(arrayList.get(i)[1])));
             Log.d("LOCATION_NAVI", locationList.get(i).getBssid());
             Log.d("LOCATION_NAVI", String.valueOf(locationList.get(i).getRssi()));
@@ -312,7 +340,6 @@ public class NavigationActivity extends AppCompatActivity {
 
         return locationList;
     }
-
 
 
     @Override
@@ -371,6 +398,7 @@ public class NavigationActivity extends AppCompatActivity {
     private int calculateXCoordinate(int col, int canvasWidth, int numCols) {
         return (int) (col * 25.5);
     }
+
     private int calculateYCoordinate(int row, int canvasHeight, int numRows) {
         return (int) (row * 25.2);
     }
@@ -405,6 +433,52 @@ public class NavigationActivity extends AppCompatActivity {
         }
 
         return maze;
+    }
+
+    ItemCoordinates itemCoordinates = new ItemCoordinates();
+
+    //센서값 표출 및 빙글빙글
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float degree = Math.round(event.values[0]);
+
+
+        Point endPoint = itemCoordinates.getEndCoordinate(currentDestination);
+        Point startPoint = itemCoordinates.getStartCoordinate("414호");//TODO: currentPosition 정상적으로 받아와지면 (currentPosition);
+
+        double weight;
+
+        if (endPoint.x == startPoint.x) {
+            if (endPoint.y > startPoint.y) {
+                weight = Math.PI / 2.0;  // 90도
+            } else {
+                weight = -Math.PI / 2.0;  // -90도
+            }
+        } else {
+            weight = Math.atan((double) (endPoint.y - startPoint.y) / (double) (endPoint.x - startPoint.x));
+        }
+
+        weight = Math.toDegrees(weight) + 32;  // 라디안 단위를 각도로 변환, 위쪽을 북쪽으로 맞춰주는 32º 추가
+
+        Log.i("weight", String.valueOf(weight));
+        degree -= weight;
+
+        RotateAnimation rotateAnimation = new RotateAnimation(
+                currentDegree,
+                -degree,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f);
+
+        rotateAnimation.setDuration(200);
+        rotateAnimation.setFillAfter(true);
+
+        compassImage.startAnimation(rotateAnimation);
+        currentDegree = -degree;
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // 정확도 변경 시 처리할 로직 추가
     }
 }
 
