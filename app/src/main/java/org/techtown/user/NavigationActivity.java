@@ -195,7 +195,7 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
                 }
             }
         };
-        timer.schedule(timerTask, 0, 3000);
+        timer.schedule(timerTask, 0, 1500);
 
 
     }
@@ -228,7 +228,7 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
     }
 
 
-    // user가 현재 위치에서 WIFI 정보를 보내는 함수 (place, ssid, bssid, rssi)
+    // user가 현재 위치에서 WIFI 정보를 보내는 함수 (bssid, rssi)
     private void sendLocation(List<Location> locationList) {
 
         // retrofit 설정
