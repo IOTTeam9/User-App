@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     TextView currentPosition;
-
+    String startPosition;
 
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 // 선택된 아이템의 값을 가져옴
                 selectedDest = mid[arg2];
                 Point endPoint = itemCoordinates.getEndCoordinate(selectedDest); // 목적지 좌표 찾아오기
-                //Point startPoint = itemCoordinates.getStartCoordinate(selectedDest); 출발지 좌표 찾아오기
+                Point startPoint = itemCoordinates.getStartCoordinate(startPosition); //출발지 좌표 찾아오기
 
                 if (!currentPosition.getText().equals("Need to Find")) {
                     // NavigationActivity로 이동하는 코드
@@ -146,7 +146,11 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("endX", endPoint.x);
                     intent.putExtra("endY", endPoint.y); // 목적지 이름 및 좌표 전송
                     intent.putExtra("destination", arg0.getAdapter().getItem(arg2).toString());  // 선택된 목적지 전송
+
                     intent.putExtra("currentPosition", currentPosition.getText());
+                    intent.putExtra("startX", startPoint.x);
+                    intent.putExtra("startY", startPoint.y); // 출발지 이름 및 좌표 전송
+
                     Log.d("DEST", arg0.getAdapter().getItem(arg2).toString());
                     startActivity(intent);
                 } else {
@@ -302,6 +306,7 @@ public class MainActivity extends AppCompatActivity {
 
                     ReceiveResponse resp = response.body();
                     currentPosition.setText(resp.getLocation());
+                    startPosition = resp.getLocation();
 
                     Toast.makeText(getApplicationContext(), "Success getLocation.", Toast.LENGTH_LONG);
                     Log.d("CURRENT_POSITION", resp.getLocation());

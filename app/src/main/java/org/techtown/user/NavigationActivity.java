@@ -60,7 +60,7 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
 
     WifiManager wifiManager;
     List<ScanResult> scanResultList;
-
+    private Canvas canvas;
     boolean isPermitted = false;
     boolean isWifiScan = false;
     boolean doneWifiScan = true;
@@ -149,6 +149,8 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
         int endX = intent.getIntExtra("endX", 0);
         int endY = intent.getIntExtra("endY", 0);
         currentDestination = intent.getStringExtra("destination");
+        int startX = intent.getIntExtra("startX", 0);
+        int startY = intent.getIntExtra("startY", 0);
         currentPosition = intent.getStringExtra("currentPosition");
 
         TextView position = findViewById(R.id.main_currentPosition_tv);
@@ -160,7 +162,8 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
 
         maze = readMazeFromFile();
         AStarAlgorithm algorithm = new AStarAlgorithm(maze);
-        path = algorithm.findShortestPath(106, 12, endY, endX); //임의로 지정
+        path = algorithm.findShortestPath(startY, startX, endY, endX);
+
         if (path != null && !path.isEmpty()) {
             //algorithm.showPath(this, path); // path toast로 미리 출력
             drawPathOnCanvas(path, numRows, numCols);
@@ -168,7 +171,6 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
             String formattedLength = String.format("%.2f", pathLength);  // 소수점 둘째 자리까지 표시
             pathLengthTextView.setText(formattedLength + "m");
         }
-
         // -----------------------------------------------------------------------
 
 
@@ -288,7 +290,6 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
                     Log.d("CURRENT_POSITION", resp.getLocation());
                 }
             }
-
             @Override
             public void onFailure(Call<ReceiveResponse> call, Throwable t) {
                 Log.d("FAILURE", t.getMessage());
@@ -398,7 +399,7 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
 
         // 빈 비트맵 생성
         Bitmap bitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
+        canvas = new Canvas(bitmap);
         // 배경 이미지 그리기
         canvas.drawBitmap(background, 0, 0, null);
         // 경로 그리기
@@ -417,6 +418,21 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
 
         ImageView mapViewImageView = findViewById(R.id.mapView);
         mapViewImageView.setImageBitmap(bitmap);
+    }
+
+    //현재 위치 canvas에 찍기
+    private void drawCircleOnCanvas(int x, int y) {
+        if (canvas != null) {
+            Paint paint = new Paint();
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(Color.GREEN);
+
+            canvas.drawCircle(x, y, 10, paint);
+
+            // 변경된 캔버스를 이미지뷰에 설정
+            ImageView mapViewImageView = findViewById(R.id.mapView);
+            mapViewImageView.invalidate();
+        }
     }
 
     // maze와 map의 크기를 맞춰서 좌표 설정해주는 부분
