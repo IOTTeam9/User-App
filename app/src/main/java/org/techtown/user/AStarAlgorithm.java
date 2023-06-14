@@ -139,8 +139,12 @@ public class AStarAlgorithm {
             if (isValidLocation(row, col) && maze[row][col] == 1) {
                 Node neighbor = nodes[row][col];
                 if (neighbor != null && !neighbors.contains(neighbor)) {
-                    // 대각선 방향인 경우 가중치 1.4를 적용
-                    int neighborGScore = (direction[0] == 0 || direction[1] == 0) ? node.gScore + 1 : node.gScore + 14;
+                    int neighborGScore;
+                    if (direction[0] == 0 || direction[1] == 0) {
+                        neighborGScore = node.gScore + 10; // 직선 이동 비용
+                    } else {
+                        neighborGScore = node.gScore + 14; // 대각선 이동 비용
+                    }
 
                     if (neighbor.gScore > neighborGScore) {
                         neighbor.parent = node;
@@ -155,6 +159,8 @@ public class AStarAlgorithm {
 
         return neighbors;
     }
+
+
 
     private int calculateFScore(Node node, Node endNode) {
         return node.gScore + calculateHeuristic(node, endNode);
