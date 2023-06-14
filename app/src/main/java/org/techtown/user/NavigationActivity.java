@@ -430,7 +430,7 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
             paint.setColor(Color.GREEN);
             x=(int) (x * 25.5);
             y=(int) (y * 25.2);
-            canvas.drawCircle(x, y, 10, paint);
+            canvas.drawCircle(x, y, 50, paint);
 
             // 변경된 캔버스를 이미지뷰에 설정
             ImageView mapViewImageView = findViewById(R.id.mapView);
