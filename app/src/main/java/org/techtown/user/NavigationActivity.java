@@ -285,6 +285,8 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
 
                     ReceiveResponse resp = response.body();
                     fingerPosition = resp.getLocation();
+                    Point nowPoint = itemCoordinates.getNowCoordinate(fingerPosition);
+                    drawCircleOnCanvas(nowPoint.x, nowPoint.y);
 
                     Toast.makeText(getApplicationContext(), "Success getLocation.", Toast.LENGTH_LONG);
                     Log.d("CURRENT_POSITION", resp.getLocation());
@@ -426,7 +428,8 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
             Paint paint = new Paint();
             paint.setStyle(Paint.Style.FILL);
             paint.setColor(Color.GREEN);
-
+            x=(int) (x * 25.5);
+            y=(int) (y * 25.2);
             canvas.drawCircle(x, y, 10, paint);
 
             // 변경된 캔버스를 이미지뷰에 설정
