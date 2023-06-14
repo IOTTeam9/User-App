@@ -69,6 +69,7 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
     String currentPosition;
     String currentDestination;
     Timer timer;
+    String fingerPosition;
 
 
     //화살표 빙글빙글용
@@ -226,11 +227,12 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
         unregisterReceiver(mReceiver);
     }
 
+
     // user가 현재 위치에서 WIFI 정보를 보내는 함수 (place, ssid, bssid, rssi)
     private void sendLocation(List<Location> locationList) {
 
         // retrofit 설정
-        String BASE_URL = "https://cha-conne.kro.kr";
+        String BASE_URL = "http://3.34.148.235:5000";
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -246,17 +248,43 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
             public void onResponse(Call<ReceiveResponse> call, Response<ReceiveResponse> response) {
                 if (response.isSuccessful()) {
                     Log.d("API_CALL", "API INSIDE2");
+                    getLocation();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ReceiveResponse> call, Throwable t) {
+                Log.d("FAILURE", t.getMessage());
+            }
+        });
+    }
+
+
+    // user가 현재 위치에서 WIFI 정보를 보내는 함수 (place, ssid, bssid, rssi)
+    private void getLocation() {
+
+        // retrofit 설정
+        String BASE_URL = "http://3.34.148.235:5000";
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        LocationRetrofitInterface retrofitAPI = retrofit.create(LocationRetrofitInterface.class);
+        Log.d("API_CALL", "API INSIDE");
+
+        // sendLocation API 호출
+        retrofitAPI.getLocation().enqueue(new Callback<ReceiveResponse>() {
+            @Override
+            public void onResponse(Call<ReceiveResponse> call, Response<ReceiveResponse> response) {
+                if (response.isSuccessful()) {
+                    Log.d("API_CALL", "API INSIDE2");
 
                     ReceiveResponse resp = response.body();
-                    currentPosition = resp.getLocation();
+                    fingerPosition = resp.getLocation();
 
-                    // 도착했을 경우 도착 토스트 띄우고 MainActivity 화면으로 나가기.
-                    if (currentPosition == currentDestination) {
-                        Toast.makeText(getApplicationContext(), "Arrived at " + currentDestination, Toast.LENGTH_LONG).show();
-                        timer.cancel();
-                        finish();
-                    }
-
+                    Toast.makeText(getApplicationContext(), "Success getLocation.", Toast.LENGTH_LONG);
                     Log.d("CURRENT_POSITION", resp.getLocation());
                 }
             }
