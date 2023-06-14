@@ -131,6 +131,7 @@ public class NavigationActivity extends AppCompatActivity {
         int endY = intent.getIntExtra("endY", 0);
         currentDestination = intent.getStringExtra("destination");
         TextView textView = findViewById(R.id.destination);
+        TextView pathLengthTextView = findViewById(R.id.pathLengthTextView);
         textView.setText(selectedDest);
 
         maze = readMazeFromFile();
@@ -139,6 +140,9 @@ public class NavigationActivity extends AppCompatActivity {
         if (path != null && !path.isEmpty()) {
             //algorithm.showPath(this, path); // path toast로 미리 출력
             drawPathOnCanvas(path, numRows, numCols);
+            double pathLength = path.size() * 1.32; // 출발지-도착지 거리 구하기
+            String formattedLength = String.format("%.2f", pathLength);  // 소수점 둘째 자리까지 표시
+            pathLengthTextView.setText(formattedLength+"m");
         }
 
         // -----------------------------------------------------------------------
@@ -358,6 +362,7 @@ public class NavigationActivity extends AppCompatActivity {
     // maze와 map의 크기를 맞춰서 좌표 설정해주는 부분
     //maze : 73 150
     //map : 1864 3780
+    //96.6m -> maze의 1픽셀마다 1.32m
     private int calculateXCoordinate(int col, int canvasWidth, int numCols) {
         return (int) (col * 25.5);
     }
