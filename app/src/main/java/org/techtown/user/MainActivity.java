@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         arrayList.clear();
 
-        if(!doneWifiScan) {
+        if (!doneWifiScan) {
 
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -76,9 +76,9 @@ public class MainActivity extends AppCompatActivity {
             }
             scanResultList = wifiManager.getScanResults();
 
-            int count=0;
+            int count = 0;
 
-            for(int i = 0; i < scanResultList.size(); i++){
+            for (int i = 0; i < scanResultList.size(); i++) {
                 ScanResult result = scanResultList.get(i);
                 String[] dataset = new String[2];
 
@@ -103,15 +103,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final String[] mid = {"414호", "4층 엘레베이터1", "4층 중앙", "4층 아르테크네", "406호",
-                "407호", "4층 엘레베이터2", "413호", "411호", "5층 엘레베이터1", "5층 중앙1", "5층 중앙2", "506호"
-                , "508호", "510호", "5층 엘레베이터2", "513호", "5층 엘레베이터3"};
+        final String[] mid = {"414", "400_eli1", "4_terrace", "400_art", "406",
+                "407", "400_eli3", "413", "411", "500_eli2", "cube_n", "cube_s", "506"
+                , "508", "510", "500_eli3", "513", "500_eli1"};
 
         Button findBtn = (Button) findViewById(R.id.main_findBtn_btn);
         ListView list = (ListView) findViewById(R.id.listView1);
@@ -166,14 +165,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
     }
 
     public List<Location> transformDataList(ArrayList<String[]> arrayList) {
 
         locationList.clear();
 
-        for(int i = 0; i < arrayList.size(); i++) {
+        for (int i = 0; i < arrayList.size(); i++) {
             locationList.add(new Location(arrayList.get(i)[0], Integer.parseInt(arrayList.get(i)[1])));
             Log.d("LOCATION", locationList.get(i).getBssid());
             Log.d("LOCATION", String.valueOf(locationList.get(i).getRssi()));
@@ -244,7 +242,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     // user가 현재 위치에서 WIFI 정보를 보내는 함수 (place, ssid, bssid, rssi)
     private void sendLocation(List<Location> locationList) {
 
@@ -263,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
         retrofitAPI.sendLocation(locationList).enqueue(new Callback<ReceiveResponse>() {
             @Override
             public void onResponse(Call<ReceiveResponse> call, Response<ReceiveResponse> response) {
-                if(response.isSuccessful()) {
+                if (response.isSuccessful()) {
                     Log.d("API_CALL", "API INSIDE2");
                     getLocation();
                 }
@@ -295,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
         retrofitAPI.getLocation().enqueue(new Callback<ReceiveResponse>() {
             @Override
             public void onResponse(Call<ReceiveResponse> call, Response<ReceiveResponse> response) {
-                if(response.isSuccessful()) {
+                if (response.isSuccessful()) {
                     Log.d("API_CALL", "API INSIDE2");
 
                     ReceiveResponse resp = response.body();

@@ -481,8 +481,3 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
         // 정확도 변경 시 처리할 로직 추가
     }
 }
-
-
-
-
-
