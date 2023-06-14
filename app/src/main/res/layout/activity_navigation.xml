@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="AI관-401"
+                android:text="413호"
                 android:textSize="20dp"
                 android:textStyle="bold" />
             <ImageView

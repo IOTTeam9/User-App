@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,8 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NavigationActivity extends AppCompatActivity {
-    int width = 629;
-    int height = 1280; // map 픽셀크기
     private List<AStarAlgorithm.Node> path = new ArrayList<>(); // 경로 정보
     private int numRows; // 미로 행 개수
     private int numCols; // 미로 열 개수
@@ -55,18 +54,18 @@ public class NavigationActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String selectedDest = intent.getStringExtra("selectedDest");
+        int endX = intent.getIntExtra("endX", 0);
+        int endY = intent.getIntExtra("endY", 0);
         TextView textView = findViewById(R.id.destination);
         textView.setText(selectedDest);
 
         maze = readMazeFromFile();
-        //numRows = maze.length;
-        //numCols = numRows > 0 ? maze[0].length : 0;
         AStarAlgorithm algorithm = new AStarAlgorithm(maze);
-        path = algorithm.findShortestPath(106, 12, 132, 20); //임의로 지정
-        //algorithm.showPath(this, path); // path toast로 미리 출력
-        if (path != null && !path.isEmpty()) {
-            drawPathOnCanvas(path, numRows, numCols);
+        path = algorithm.findShortestPath(106, 12, endY, endX); //임의로 지정
 
+        if (path != null && !path.isEmpty()) {
+            algorithm.showPath(this, path); // path toast로 미리 출력
+            drawPathOnCanvas(path, numRows, numCols);
         }
     }
 
@@ -89,15 +88,12 @@ public class NavigationActivity extends AppCompatActivity {
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.RED);
         paint.setStrokeWidth(20);
-
         // 배경 이미지 로드
-        Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.map4);
+        Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.map);
 
         // 캔버스 크기 설정
         int canvasWidth = background.getWidth();
         int canvasHeight = background.getHeight();
-        String message = canvasWidth + " x " + canvasHeight;
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 
         // 빈 비트맵 생성
         Bitmap bitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888);
@@ -123,11 +119,13 @@ public class NavigationActivity extends AppCompatActivity {
     }
 
     // maze와 map의 크기를 맞춰서 좌표 설정해주는 부분
+    //maze : 73 150
+    //map : 1864 3780
     private int calculateXCoordinate(int col, int canvasWidth, int numCols) {
-        return (int) (col * 22.6);
+        return (int) (col * 25.5);
     }
     private int calculateYCoordinate(int row, int canvasHeight, int numRows) {
-        return (int) (row * 22.4);
+        return (int) (row * 25.2);
     }
 
 
