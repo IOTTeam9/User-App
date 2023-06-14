@@ -290,6 +290,11 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
                     ReceiveResponse resp = response.body();
                     fingerPosition = resp.getLocation();
 
+                    if(fingerPosition.equals(currentDestination)) {
+                        Toast.makeText(getApplicationContext(), "Arrived at " + currentDestination, Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+
                     Point nowPoint = itemCoordinates.getNowCoordinate(fingerPosition);
                     AStarAlgorithm algorithm = new AStarAlgorithm(maze);
                     path = algorithm.findShortestPath(nowPoint.y, nowPoint.x, endY, endX);
