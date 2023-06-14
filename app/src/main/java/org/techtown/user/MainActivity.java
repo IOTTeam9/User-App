@@ -133,6 +133,8 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("selectedDest", selectedDest);
                 intent.putExtra("endX", endPoint.x);
                 intent.putExtra("endY", endPoint.y); // 목적지 이름 및 좌표 전송
+                intent.putExtra("destination", arg0.getAdapter().getItem(arg2).toString());  // 선택된 목적지 전송
+                Log.d("DEST", arg0.getAdapter().getItem(arg2).toString());
                 startActivity(intent);
             }
         });

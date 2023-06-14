@@ -12,7 +12,7 @@ public interface LocationRetrofitInterface {
 //    @POST("/location/send")
 //    Call<NavigationResponse> sendLocation(@Body List<Location> myLocation);
 
-    @POST("/location/send")
+    @POST("/flask")
     Call<ReceiveResponse> sendLocation(@Body List<Location> myLocation);
 
 }

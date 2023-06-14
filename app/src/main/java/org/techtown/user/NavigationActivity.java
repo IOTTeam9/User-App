@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,6 +60,8 @@ public class NavigationActivity extends AppCompatActivity {
     final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     String currentPosition;
+    String currentDestination;
+    Timer timer;
 
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -126,6 +129,7 @@ public class NavigationActivity extends AppCompatActivity {
         String selectedDest = intent.getStringExtra("selectedDest");
         int endX = intent.getIntExtra("endX", 0);
         int endY = intent.getIntExtra("endY", 0);
+        currentDestination = intent.getStringExtra("destination");
         TextView textView = findViewById(R.id.destination);
         textView.setText(selectedDest);
 
@@ -150,7 +154,7 @@ public class NavigationActivity extends AppCompatActivity {
         }
 
         // 정해진 시간마다 실행
-        Timer timer = new Timer();
+        timer = new Timer();
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -164,6 +168,7 @@ public class NavigationActivity extends AppCompatActivity {
             }
         };
         timer.schedule(timerTask, 0, 3000);
+
 
     }
 
@@ -207,6 +212,13 @@ public class NavigationActivity extends AppCompatActivity {
 
                     ReceiveResponse resp = response.body();
                     currentPosition = resp.getLocation();
+
+                    // 도착했을 경우 도착 토스트 띄우고 MainActivity 화면으로 나가기.
+                    if(currentPosition == currentDestination) {
+                        Toast.makeText(getApplicationContext(), "Arrived at destination.", Toast.LENGTH_LONG).show();
+                        timer.cancel();
+                        finish();
+                    }
 
                     Log.d("CURRENT_POSITION", resp.getLocation());
                 }
