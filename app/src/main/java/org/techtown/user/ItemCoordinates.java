@@ -14,7 +14,7 @@ public class ItemCoordinates {
         // 목적지 목록
         itemCoordinates.put("414", new Point(12, 90));
         itemCoordinates.put("400_eli1", new Point(18, 46));
-        itemCoordinates.put("400_terrace", new Point(20, 50));
+        itemCoordinates.put("4_terrace", new Point(20, 50));
         itemCoordinates.put("400_art", new Point(5, 4));
         itemCoordinates.put("406", new Point(50, 126));
         itemCoordinates.put("407", new Point(55, 132));

@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final String[] mid = {"414", "400_eli1", "400_terrace", "400_art", "406",
+        final String[] mid = {"414", "400_eli1", "4_terrace", "400_art", "406",
                 "407", "400_eli3", "413", "411", "500_eli2", "cube_n", "cube_s", "506"
                 , "508", "510", "500_eli3", "513", "500_eli1"};
 
