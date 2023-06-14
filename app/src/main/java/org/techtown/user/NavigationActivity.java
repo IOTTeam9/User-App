@@ -52,7 +52,11 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
     private int numRows; // 미로 행 개수
     private int numCols; // 미로 열 개수
     private int[][] maze; // 미로 정보를 저장하는 2차원 배열
+    private Point previousPoint; // 이전에 찍은 점을 저장할 변수
 
+    int endX;
+    int endY;
+    TextView pathLengthTextView;
     // -----------------------------------------------------------------------
 
     ArrayList<String[]> arrayList = new ArrayList<>();
@@ -155,7 +159,7 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
 
         TextView position = findViewById(R.id.main_currentPosition_tv);
         TextView destination = findViewById(R.id.destination);
-        TextView pathLengthTextView = findViewById(R.id.pathLengthTextView);
+        pathLengthTextView = findViewById(R.id.pathLengthTextView);
 
         destination.setText(selectedDest);
         position.setText(currentPosition);
@@ -285,8 +289,18 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
 
                     ReceiveResponse resp = response.body();
                     fingerPosition = resp.getLocation();
+
                     Point nowPoint = itemCoordinates.getNowCoordinate(fingerPosition);
-                    drawCircleOnCanvas(nowPoint.x, nowPoint.y);
+                    AStarAlgorithm algorithm = new AStarAlgorithm(maze);
+                    path = algorithm.findShortestPath(nowPoint.y, nowPoint.x, endY, endX);
+
+                    if (path != null && !path.isEmpty()) {
+                        //algorithm.showPath(this, path); // path toast로 미리 출력
+                        drawPathOnCanvas(path, numRows, numCols);
+                        double pathLength = path.size() * 1.32; // 출발지-도착지 거리 구하기
+                        String formattedLength = String.format("%.2f", pathLength);  // 소수점 둘째 자리까지 표시
+                        pathLengthTextView.setText(formattedLength + "m");
+                    }
 
                     Toast.makeText(getApplicationContext(), "Success getLocation.", Toast.LENGTH_LONG);
                     Log.d("CURRENT_POSITION", resp.getLocation());
