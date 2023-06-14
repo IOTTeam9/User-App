@@ -15,4 +15,6 @@ public interface LocationRetrofitInterface {
     @POST("/flask")
     Call<ReceiveResponse> sendLocation(@Body List<Location> myLocation);
 
+    @GET("/flask")
+    Call<ReceiveResponse> getLocation();
 }

@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
             String action = intent.getAction();
             if (action.equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
                 getWifiInfo();
-                transformDataList(arrayList);
-                sendLocation(locationList);
+
+
             }
         }
     };
@@ -75,9 +76,15 @@ public class MainActivity extends AppCompatActivity {
             }
             scanResultList = wifiManager.getScanResults();
 
+            int count=0;
+
             for(int i = 0; i < scanResultList.size(); i++){
                 ScanResult result = scanResultList.get(i);
                 String[] dataset = new String[2];
+
+//                if(result.level < -55) {
+//                    continue;
+//                }
 
                 // dataset에 BSSID, RSSI, Place를 순서대로 저장
                 dataset[0] = String.valueOf(result.BSSID);
@@ -86,8 +93,12 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("WIFI MAC!! : ", dataset[0]);
                 Log.d("WIFI RSSI!! : ", dataset[1]);
 
-                arrayList.add(i, dataset);
+                arrayList.add(count, dataset);
+                count++;
             }
+
+            transformDataList(arrayList);
+            sendLocation(locationList);
         }
     }
 
@@ -134,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("endX", endPoint.x);
                 intent.putExtra("endY", endPoint.y); // 목적지 이름 및 좌표 전송
                 intent.putExtra("destination", arg0.getAdapter().getItem(arg2).toString());  // 선택된 목적지 전송
+                intent.putExtra("currentPosition", currentPosition.getText());
                 Log.d("DEST", arg0.getAdapter().getItem(arg2).toString());
                 startActivity(intent);
             }
@@ -237,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
     private void sendLocation(List<Location> locationList) {
 
         // retrofit 설정
-        String BASE_URL = "https://cha-conne.kro.kr";
+        String BASE_URL = "http://3.34.148.235:5000";
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -253,10 +265,43 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<ReceiveResponse> call, Response<ReceiveResponse> response) {
                 if(response.isSuccessful()) {
                     Log.d("API_CALL", "API INSIDE2");
+                    getLocation();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ReceiveResponse> call, Throwable t) {
+                Log.d("FAILURE", t.getMessage());
+            }
+        });
+    }
+
+
+    // user가 현재 위치에서 WIFI 정보를 보내는 함수 (place, ssid, bssid, rssi)
+    private void getLocation() {
+
+        // retrofit 설정
+        String BASE_URL = "http://3.34.148.235:5000";
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        LocationRetrofitInterface retrofitAPI = retrofit.create(LocationRetrofitInterface.class);
+        Log.d("API_CALL", "API INSIDE");
+
+        // sendLocation API 호출
+        retrofitAPI.getLocation().enqueue(new Callback<ReceiveResponse>() {
+            @Override
+            public void onResponse(Call<ReceiveResponse> call, Response<ReceiveResponse> response) {
+                if(response.isSuccessful()) {
+                    Log.d("API_CALL", "API INSIDE2");
 
                     ReceiveResponse resp = response.body();
                     currentPosition.setText(resp.getLocation());
 
+                    Toast.makeText(getApplicationContext(), "Success getLocation.", Toast.LENGTH_LONG);
                     Log.d("CURRENT_POSITION", resp.getLocation());
                 }
             }

@@ -130,9 +130,14 @@ public class NavigationActivity extends AppCompatActivity {
         int endX = intent.getIntExtra("endX", 0);
         int endY = intent.getIntExtra("endY", 0);
         currentDestination = intent.getStringExtra("destination");
-        TextView textView = findViewById(R.id.destination);
+        currentPosition = intent.getStringExtra("currentPosition");
+
+        TextView position = findViewById(R.id.main_currentPosition_tv);
+        TextView destination = findViewById(R.id.destination);
         TextView pathLengthTextView = findViewById(R.id.pathLengthTextView);
-        textView.setText(selectedDest);
+
+        destination.setText(selectedDest);
+        position.setText(currentPosition);
 
         maze = readMazeFromFile();
         AStarAlgorithm algorithm = new AStarAlgorithm(maze);
@@ -219,7 +224,7 @@ public class NavigationActivity extends AppCompatActivity {
 
                     // 도착했을 경우 도착 토스트 띄우고 MainActivity 화면으로 나가기.
                     if(currentPosition == currentDestination) {
-                        Toast.makeText(getApplicationContext(), "Arrived at destination.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Arrived at " + currentDestination, Toast.LENGTH_LONG).show();
                         timer.cancel();
                         finish();
                     }
