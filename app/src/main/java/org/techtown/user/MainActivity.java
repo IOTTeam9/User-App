@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 Point endPoint = itemCoordinates.getEndCoordinate(selectedDest); // 목적지 좌표 찾아오기
                 Point startPoint = itemCoordinates.getStartCoordinate(startPosition); //출발지 좌표 찾아오기
 
+                Log.d("ERROR2", String.valueOf(endPoint));
                 if (!currentPosition.getText().equals("Need to Find")) {
                     // NavigationActivity로 이동하는 코드
                     Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
@@ -251,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // user가 현재 위치에서 WIFI 정보를 보내는 함수 (place, ssid, bssid, rssi)
+    // user가 현재 위치에서 WIFI 정보를 보내는 함수 (bssid, rssi)
     private void sendLocation(List<Location> locationList) {
 
         // retrofit 설정
@@ -283,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // user가 현재 위치에서 WIFI 정보를 보내는 함수 (place, ssid, bssid, rssi)
+    // 서버로부터 user의 위치 정보를 받아오는 API
     private void getLocation() {
 
         // retrofit 설정
@@ -297,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
         LocationRetrofitInterface retrofitAPI = retrofit.create(LocationRetrofitInterface.class);
         Log.d("API_CALL", "API INSIDE");
 
-        // sendLocation API 호출
+        // getLocation API 호출
         retrofitAPI.getLocation().enqueue(new Callback<ReceiveResponse>() {
             @Override
             public void onResponse(Call<ReceiveResponse> call, Response<ReceiveResponse> response) {

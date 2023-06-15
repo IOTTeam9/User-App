@@ -1,6 +1,8 @@
 package org.techtown.user;
 
+import android.content.Intent;
 import android.graphics.Point;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -114,9 +116,18 @@ public class ItemCoordinates {
         return new Point(startCoordinate.x, startCoordinate.y);
     }
 
-    public Point getNowCoordinate(String item) {
+    public Point getNowCoordinate(String item, Intent intent) {
         Point nowCoordinate = itemCoordinates.get(item);
-        assert nowCoordinate != null;
+//        assert nowCoordinate != null;
+
+        if(nowCoordinate == null) {
+            int X = intent.getIntExtra("startX", 0);
+            int Y = intent.getIntExtra("startY", 0);
+            Log.d("POINT_X", String.valueOf(X));
+            Log.d("POINT_Y", String.valueOf(Y));
+            return new Point(X, Y);
+        }
+        Log.d("NORMALPOINT", "");
         return new Point(nowCoordinate.x, nowCoordinate.y);
     }
 }

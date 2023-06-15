@@ -150,12 +150,16 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
 
         Intent intent = getIntent();
         String selectedDest = intent.getStringExtra("selectedDest");
-        int endX = intent.getIntExtra("endX", 0);
-        int endY = intent.getIntExtra("endY", 0);
+        endX = intent.getIntExtra("endX", 0);
+        endY = intent.getIntExtra("endY", 0);
+
+        Log.d("ERROR3", String.valueOf(endX));
         currentDestination = intent.getStringExtra("destination");
+        currentPosition = intent.getStringExtra("currentPosition");
+
         int startX = intent.getIntExtra("startX", 0);
         int startY = intent.getIntExtra("startY", 0);
-        currentPosition = intent.getStringExtra("currentPosition");
+
 
         TextView position = findViewById(R.id.main_currentPosition_tv);
         TextView destination = findViewById(R.id.destination);
@@ -289,13 +293,18 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
 
                     ReceiveResponse resp = response.body();
                     fingerPosition = resp.getLocation();
+                    Log.d("POSITION_CURRENT", fingerPosition);
+                    Log.d("POSITION_DEST", currentDestination);
+
+                    Log.d("ERROR", String.valueOf(endX));
+                    Log.d("ERROR", String.valueOf(endY));
 
                     if(fingerPosition.equals(currentDestination)) {
                         Toast.makeText(getApplicationContext(), "Arrived at " + currentDestination, Toast.LENGTH_LONG).show();
                         finish();
                     }
 
-                    Point nowPoint = itemCoordinates.getNowCoordinate(fingerPosition);
+                    Point nowPoint = itemCoordinates.getNowCoordinate(fingerPosition, getIntent());
                     AStarAlgorithm algorithm = new AStarAlgorithm(maze);
                     path = algorithm.findShortestPath(nowPoint.y, nowPoint.x, endY, endX);
 
@@ -508,7 +517,6 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
     public void onSensorChanged(SensorEvent event) {
         float degree = Math.round(event.values[0]);
 
-
         Point endPoint = itemCoordinates.getEndCoordinate(currentDestination);
         Point startPoint = itemCoordinates.getStartCoordinate(currentPosition);
 
@@ -524,10 +532,12 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
             weight = Math.atan((double) (endPoint.y - startPoint.y) / (double) (endPoint.x - startPoint.x));
         }
 
-        weight = Math.toDegrees(weight) + 32;  // 라디안 단위를 각도로 변환, 위쪽을 북쪽으로 맞춰주는 32º 추가
+        weight = Math.toDegrees(weight) + 32 ;  // 라디안 단위를 각도로 변환, 위쪽을 북쪽으로 맞춰주는 32º 추가
 
         Log.i("weight", String.valueOf(weight));
         degree -= weight;
+
+
 
         RotateAnimation rotateAnimation = new RotateAnimation(
                 currentDegree,
