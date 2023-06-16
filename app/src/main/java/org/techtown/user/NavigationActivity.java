@@ -532,7 +532,13 @@ public class NavigationActivity extends AppCompatActivity implements SensorEvent
             weight = Math.atan((double) (endPoint.y - startPoint.y) / (double) (endPoint.x - startPoint.x));
         }
 
-        weight = Math.toDegrees(weight) + 32 ;  // 라디안 단위를 각도로 변환, 위쪽을 북쪽으로 맞춰주는 32º 추가
+        weight = Math.toDegrees(weight) + 32;  // 라디안 단위를 각도로 변환, 위쪽을 북쪽으로 맞춰주는 32º 추가
+
+//        weight = Math.toDegrees(weight) - 20;
+
+//        if(endPoint.x == 5 && endPoint.y == 4) {
+//            weight = Math.toDegrees(weight) + 90;
+//        }
 
         Log.i("weight", String.valueOf(weight));
         degree -= weight;
